@@ -83,6 +83,7 @@ public class FileService implements InitializingBean {
 		Iterable<FileMaster> fileMasters=entityRepository.findAll();
 		for (FileMaster fileMaster : fileMasters) 
 		{
+			System.out.println( fileMaster.getTxnId()+"-"+fileMaster.getTransactionDate()+"-"+fileMaster.getMeter());
 			//FileMaster2 fileMaster2=new FileMaster2(fileMaster);
 			List<FileMaster> duplicateList=entityRepository.findAllByTransactionDateAndMeter(fileMaster.getTransactionDate(),fileMaster.getMeter());
 			if(duplicateList.size()==1)
