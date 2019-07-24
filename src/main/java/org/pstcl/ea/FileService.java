@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,37 +82,25 @@ public class FileService implements InitializingBean {
 	public void copyFilesToNewDb()
 	{
 		Iterable<FileMaster> fileMasters=entityRepository.findAll();
+		
+		List<FileMaster> myList = Lists.newArrayList(fileMasters.iterator());
+		Integer ssize=myList.size();
 		for (FileMaster fileMaster : fileMasters) 
 		{
-			System.out.println( fileMaster.getTxnId()+"-"+fileMaster.getTransactionDate()+"-"+fileMaster.getMeter());
-			//FileMaster2 fileMaster2=new FileMaster2(fileMaster);
+			System.out.println( ssize+" remaining: "+fileMaster.getTxnId()+"-"+fileMaster.getTransactionDate()+"-"+fileMaster.getMeter());
+			FileMaster2 fileMaster2=new FileMaster2(fileMaster);
 			List<FileMaster> duplicateList=entityRepository.findAllByTransactionDateAndMeter(fileMaster.getTransactionDate(),fileMaster.getMeter());
 			if(duplicateList.size()==1)
 			{
-				//fileMaster2=new FileMaster2(duplicateList.get(0));
+				fileMaster2=new FileMaster2(duplicateList.get(0));
+				fileMaster2Repo.save(fileMaster2);
 			}
 			else
 			{
 				for (FileMaster duplicate : duplicateList) {
 					dupfileMaster3Repo.save(new FileMaster3(duplicate));
-//					if(fileMaster2.getTxnId()<duplicate.getTxnId())
-//					{
-//						fileMaster2=new FileMaster2(duplicate);
-//					}
 				}
 
-			}
-			try {
-
-//				fileMaster2Repo.save(fileMaster2);
-			}
-			catch(DuplicateKeyException duplicateKeyException)
-			{
-				duplicateKeyException.printStackTrace();				
-			}
-			catch(Exception exception)
-			{
-				exception.printStackTrace();
 			}
 
 		}
